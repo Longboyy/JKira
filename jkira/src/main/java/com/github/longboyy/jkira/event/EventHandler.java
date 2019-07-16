@@ -57,7 +57,7 @@ public class EventHandler {
 				
 				break;
 			case "data":
-				JSONArray groupMessages = object.getJSONArray("snitch-alerts");
+				JSONArray groupMessages = object.getJSONArray("group-messages");
 				
 				for(int i=0; i<groupMessages.length(); i++) {
 					JSONObject obj = groupMessages.getJSONObject(i);
