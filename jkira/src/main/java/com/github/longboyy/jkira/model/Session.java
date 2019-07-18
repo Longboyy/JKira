@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-public class Token {
+public class Session {
 
 	private long expireTime;
 	private String[] chatGroups;
 	private String[] snitchGroups;
 	private boolean skynetEnabled;
 	
-	public Token(JSONObject object) {
+	public Session(JSONObject object) {
 		this.expireTime = object.getLong("expires");
 		
 		List<String> chatGroups = new ArrayList<>();

@@ -10,7 +10,7 @@ public class Snitch {
 	private SnitchType type;
 	
 	public Snitch(JSONObject object) {
-		this.location = new Location(object);
+		this.location = new Location(object.getJSONObject("location"));
 		this.name = object.getString("name");
 		this.groupName = object.getString("group");
 		this.type = SnitchType.getById(object.getString("type"));
