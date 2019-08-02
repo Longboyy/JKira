@@ -37,4 +37,19 @@ public class Location {
 		return world;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[X: ");
+		builder.append(x);
+		builder.append(", Y: ");
+		builder.append(y);
+		builder.append(", Z: ");
+		builder.append(z);
+		builder.append(" - `");
+		builder.append(world);
+		builder.append("`]");
+		return builder.toString();
+	}
+	
 }

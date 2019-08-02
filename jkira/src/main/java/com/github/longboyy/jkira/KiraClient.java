@@ -2,8 +2,6 @@ package com.github.longboyy.jkira;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -11,16 +9,28 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.longboyy.jkira.model.GroupMessage;
-import com.github.longboyy.jkira.model.SkynetAction;
 import com.github.longboyy.jkira.model.Session;
+import com.github.longboyy.jkira.model.SkynetAction;
+import com.github.longboyy.jkira.model.Token;
 import com.github.longboyy.jkira.model.snitch.SnitchAlert;
 
 public abstract class KiraClient extends WebSocketClient {
 	
 	private static final String KIRA_VERSION = "1";
+	
+	private static final String KIRA_SOCKET_ADDRESS = "wss://mc.civclassic.com:14314?apiToken=%s&applicationId=%s&apiVersion="+KIRA_VERSION;
+	
+	private Token token;
+	
+	private String applicationId = "";
+	
+	private KiraClient client;
 
 	public KiraClient(String token, String applicationId) throws URISyntaxException {
-		super(new URI("wss://mc.civclassic.com:14314?apiToken="+token+"&applicationId="+applicationId+"&apiVersion="+KIRA_VERSION));
+		super(new URI(String.format(KIRA_SOCKET_ADDRESS, token, applicationId)));
+		this.token = new Token(token, -1);
+		this.applicationId = applicationId;
+		this.client = this;
 	}
 	
 	private KiraClient(URI serverUri) {
@@ -38,10 +48,16 @@ public abstract class KiraClient extends WebSocketClient {
 	
 	public abstract void onSkynet(String player, SkynetAction action, long time);
 	
+	public void requestToken() {
+		this.send("{\"type\": \"new-token\"}");
+	}
+	
+	public synchronized void setToken(String token) {
+		this.token = new Token(token, -1);
+	}
 
 	@Override
 	public void onOpen(ServerHandshake handshakeData) {
-		
 	}
 
 	@Override
@@ -53,7 +69,7 @@ public abstract class KiraClient extends WebSocketClient {
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
-		
+		this.requestToken();
 	}
 
 	@Override
@@ -75,6 +91,10 @@ public abstract class KiraClient extends WebSocketClient {
 				}else {
 					this.onAuthFail();
 				}
+				
+				break;
+			case "new-token":		
+				this.token = new Token(object);
 				
 				break;
 			case "data":
